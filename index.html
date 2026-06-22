@@ -1,3 +1,12 @@
+To make the city and country names fully translate when you switch languages, I've made the following updates:
+
+1. **Search Results**: The Open-Meteo Geocoding API now uses the selected language (`language=pt` or `en`), so searched cities will appear in their Portuguese form (e.g., "Lisboa" instead of "Lisbon").
+2. **Reverse Geocoding**: When fetching the user's location via GPS, BigDataCloud will return the city/country in the active language.
+3. **Pre-set World Cities**: The 12 hardcoded global cities (Tokyo, London, etc.) now have both English and Portuguese translations built-in. 
+4. **Live Update**: When you click the `EN / PT` toggle, the website will instantly re-fetch the current location's name in the new language and re-render the world weather grid with translated names.
+
+Here is the updated code:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -1254,18 +1263,18 @@ const WEATHER_CODES = {
 };
 
 const WORLD_CITIES = [
-  { name: 'Tokyo',         country: 'Japan',         lat: 35.6762,  lon: 139.6503 },
-  { name: 'New York',      country: 'United States', lat: 40.7128,  lon: -74.0060 },
-  { name: 'London',        country: 'United Kingdom',lat: 51.5074,  lon: -0.1278  },
-  { name: 'Paris',         country: 'France',        lat: 48.8566,  lon: 2.3522   },
-  { name: 'Sydney',        country: 'Australia',     lat: -33.8688, lon: 151.2093 },
-  { name: 'Dubai',         country: 'UAE',           lat: 25.2048,  lon: 55.2708  },
-  { name: 'Singapore',     country: 'Singapore',     lat: 1.3521,   lon: 103.8198 },
-  { name: 'São Paulo',     country: 'Brazil',        lat: -23.5505, lon: -46.6333 },
-  { name: 'Reykjavík',     country: 'Iceland',       lat: 64.1466,  lon: -21.9426 },
-  { name: 'Cape Town',     country: 'South Africa',  lat: -33.9249, lon: 18.4241  },
-  { name: 'Mumbai',        country: 'India',         lat: 19.0760,  lon: 72.8777  },
-  { name: 'Moscow',        country: 'Russia',        lat: 55.7558,  lon: 37.6173  },
+  { name_en: 'Tokyo', name_pt: 'Tóquio', country_en: 'Japan', country_pt: 'Japão', lat: 35.6762, lon: 139.6503 },
+  { name_en: 'New York', name_pt: 'Nova York', country_en: 'United States', country_pt: 'Estados Unidos', lat: 40.7128, lon: -74.0060 },
+  { name_en: 'London', name_pt: 'Londres', country_en: 'United Kingdom', country_pt: 'Reino Unido', lat: 51.5074, lon: -0.1278 },
+  { name_en: 'Paris', name_pt: 'Paris', country_en: 'France', country_pt: 'França', lat: 48.8566, lon: 2.3522 },
+  { name_en: 'Sydney', name_pt: 'Sydney', country_en: 'Australia', country_pt: 'Austrália', lat: -33.8688, lon: 151.2093 },
+  { name_en: 'Dubai', name_pt: 'Dubai', country_en: 'UAE', country_pt: 'EAU', lat: 25.2048, lon: 55.2708 },
+  { name_en: 'Singapore', name_pt: 'Singapura', country_en: 'Singapore', country_pt: 'Singapura', lat: 1.3521, lon: 103.8198 },
+  { name_en: 'São Paulo', name_pt: 'São Paulo', country_en: 'Brazil', country_pt: 'Brasil', lat: -23.5505, lon: -46.6333 },
+  { name_en: 'Reykjavík', name_pt: 'Reiquijavique', country_en: 'Iceland', country_pt: 'Islândia', lat: 64.1466, lon: -21.9426 },
+  { name_en: 'Cape Town', name_pt: 'Cidade do Cabo', country_en: 'South Africa', country_pt: 'África do Sul', lat: -33.9249, lon: 18.4241 },
+  { name_en: 'Mumbai', name_pt: 'Mumbai', country_en: 'India', country_pt: 'Índia', lat: 19.0760, lon: 72.8777 },
+  { name_en: 'Moscow', name_pt: 'Moscou', country_en: 'Russia', country_pt: 'Rússia', lat: 55.7558, lon: 37.6173 },
 ];
 
 const COMPASS_DIRS = {
@@ -1288,7 +1297,7 @@ function saveLang(lang) {
   try {
     localStorage.setItem('atmos_lang', lang);
   } catch (e) {
-    // Ignore if localStorage is blocked (e.g., privacy mode)
+    // Ignore
   }
 }
 
@@ -1455,7 +1464,7 @@ function weatherIcon(code, size = 80) {
 async function searchCities(query) {
   if (!query || query.length < 2) return [];
   try {
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`;
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=${state.lang}&format=json`;
     const r = await fetch(url);
     if (!r.ok) throw new Error('Search failed');
     const d = await r.json();
@@ -1537,7 +1546,6 @@ async function detectLanguage() {
   } catch (e) {
     console.error(e);
   }
-  // Fallback to browser language
   const browserLang = navigator.language || navigator.userLanguage || 'en';
   return browserLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
 }
@@ -1881,13 +1889,17 @@ async function renderWorld() {
     const code = cur.weather_code;
     const temp = Math.round(cur.temperature_2m);
     const wind = Math.round(convertWind(cur.wind_speed_10m));
+    
+    // Determine localized name and country
+    const cName = state.lang === 'pt' ? c.name_pt : c.name_en;
+    const cCountry = state.lang === 'pt' ? c.country_pt : c.country_en;
 
     html += `
-      <div class="world-card" data-lat="${c.lat}" data-lon="${c.lon}" data-name="${c.name}" data-country="${c.country}">
+      <div class="world-card" data-lat="${c.lat}" data-lon="${c.lon}" data-name="${cName}" data-country="${cCountry}">
         <div class="flex items-start justify-between mb-3">
           <div>
-            <div class="font-display text-lg font-light" style="color:var(--text)">${c.name}</div>
-            <div class="text-[10px] uppercase tracking-wider" style="color:var(--text-3)">${c.country}</div>
+            <div class="font-display text-lg font-light" style="color:var(--text)">${cName}</div>
+            <div class="text-[10px] uppercase tracking-wider" style="color:var(--text-3)">${cCountry}</div>
           </div>
           ${weatherIcon(code, 40)}
         </div>
@@ -1963,7 +1975,6 @@ function renderDetails() {
   $('#compassSpeed').textContent = `${Math.round(convertWind(cur.wind_speed_10m))}`;
   $('#compassDir').textContent = degToCompass(cur.wind_direction_10m);
   
-  // Update compass labels
   $('#compN').textContent = COMPASS_DIRS[state.lang][0];
   $('#compE').textContent = COMPASS_DIRS[state.lang][4];
   $('#compS').textContent = COMPASS_DIRS[state.lang][8];
@@ -2120,7 +2131,7 @@ function setupToggles() {
 
 // ----- Language Toggle -----
 function setupLangToggle() {
-  $('#langToggle').addEventListener('click', (e) => {
+  $('#langToggle').addEventListener('click', async (e) => {
     const btn = e.target.closest('.toggle-btn');
     if (!btn) return;
     const lang = btn.dataset.lang;
@@ -2128,6 +2139,23 @@ function setupLangToggle() {
     state.lang = lang;
     saveLang(lang);
     $$('#langToggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+
+    // Update current location name if it matches a World City
+    if (state.location) {
+      const wc = WORLD_CITIES.find(c => c.lat === state.location.lat && c.lon === state.location.lon);
+      if (wc) {
+        state.location.name = state.lang === 'pt' ? wc.name_pt : wc.name_en;
+        state.location.country = state.lang === 'pt' ? wc.country_pt : wc.country_en;
+      } else {
+        // Re-reverse geocode to get translated name for current location
+        const rev = await reverseGeocode(state.location.lat, state.location.lon);
+        if (rev) {
+          state.location.name = rev?.city || rev?.locality || rev?.principalSubdivision || state.location.name;
+          state.location.country = rev?.countryName || rev?.countryCode || state.location.country;
+        }
+      }
+    }
+
     translatePage();
     if (state.weather) {
       renderHero();
@@ -2136,10 +2164,8 @@ function setupLangToggle() {
       renderHourCards();
       renderWeekly();
       renderDetails();
-      renderWorld();
-    } else {
-      renderWorld();
     }
+    renderWorld(); // Re-render world grid with translated names
   });
 }
 
@@ -2228,7 +2254,6 @@ async function init() {
   setupBackToday();
   setupLangToggle();
 
-  // Check saved language preference first
   const savedLang = getSavedLang();
   if (savedLang) {
     state.lang = savedLang;
@@ -2236,7 +2261,6 @@ async function init() {
     state.lang = await detectLanguage();
   }
 
-  // Set active language button
   $$('#langToggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === state.lang));
   translatePage();
   renderWorld();
@@ -2252,12 +2276,24 @@ async function init() {
         loadLocation({ lat, lon, name, country });
       },
       () => {
-        loadLocation({ name: 'Tokyo', country: 'Japan', lat: 35.6762, lon: 139.6503 });
+        const wc = WORLD_CITIES[0];
+        loadLocation({ 
+          name: state.lang === 'pt' ? wc.name_pt : wc.name_en, 
+          country: state.lang === 'pt' ? wc.country_pt : wc.country_en, 
+          lat: wc.lat, 
+          lon: wc.lon 
+        });
       },
       { timeout: 5000 }
     );
   } else {
-    loadLocation({ name: 'Tokyo', country: 'Japan', lat: 35.6762, lon: 139.6503 });
+    const wc = WORLD_CITIES[0];
+    loadLocation({ 
+      name: state.lang === 'pt' ? wc.name_pt : wc.name_en, 
+      country: state.lang === 'pt' ? wc.country_pt : wc.country_en, 
+      lat: wc.lat, 
+      lon: wc.lon 
+    });
   }
 }
 
