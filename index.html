@@ -18,8 +18,8 @@
     --border: #FF9500;
     --border-soft: rgb(0, 0, 0);
     --text: #E7E9EA;
-    --text-2: #d1d1d1;
-    --text-3: #d1d1d1;
+    --text-2: #E7E9EA;
+    --text-3: #E7E9EA;
     --amber: #fcc558;
     --amber-2: #FFAA00;
     --coral: #ff7a59;
@@ -509,7 +509,7 @@
   }
 
   /* Scrollbars */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar { width: 4px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #FFAA00; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #fcc558; }
@@ -762,7 +762,7 @@
       </div>
 
       <!-- Quick stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-10 fade-in" id="quickStats">
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 mt-8 sm:mt-10 fade-in" id="quickStats">
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="wind">Wind</span>
@@ -777,18 +777,6 @@
 
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
-            <span class="stat-label" data-i18n="humidity">Humidity</span>
-          </div>
-          <div class="stat-value font-mono">
-            <span id="humidity">—</span><span class="stat-unit">%</span>
-          </div>
-          <div class="text-xs mt-2" style="color:var(--text-3)">
-            <span data-i18n="dew_point">Dew point</span> <span id="dewPoint">—</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="precipitation">Precipitation</span>
           </div>
           <div class="stat-value font-mono">
@@ -796,18 +784,6 @@
           </div>
           <div class="text-xs mt-2" style="color:var(--text-3)">
             <span data-i18n="chance">Chance</span> <span id="precipChance">—</span>%
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="flex items-center justify-between mb-3">
-            <span class="stat-label" data-i18n="pressure">Pressure</span>
-          </div>
-          <div class="stat-value font-mono">
-            <span id="pressure">—</span><span class="stat-unit">hPa</span>
-          </div>
-          <div class="text-xs mt-2" style="color:var(--text-3)">
-            <span data-i18n="cloud_cover">Cloud cover</span> <span id="cloudCover">—</span>%
           </div>
         </div>
       </div>
@@ -1644,14 +1620,8 @@ function renderHero() {
   $('#windDir').textContent = degToCompass(cur.wind_direction_10m);
   $('#windDirDeg').textContent = cur.wind_direction_10m;
 
-  $('#humidity').textContent = cur.relative_humidity_2m;
-  $('#dewPoint').textContent = `${Math.round(convertTemp(cur.temperature_2m - (100 - cur.relative_humidity_2m)/5))}${tempSuffix()}`;
-
   $('#precipNow').textContent = round(cur.precipitation, 1) ?? 0;
   $('#precipChance').textContent = w.daily.precipitation_probability_max[0] ?? 0;
-
-  $('#pressure').textContent = Math.round(cur.surface_pressure);
-  $('#cloudCover').textContent = cur.cloud_cover;
 }
 
 // ----- Render: Hourly Chart -----
