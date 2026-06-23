@@ -1,9 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Atmos — Global Meteorology Observatory</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +29,7 @@
     --green: #34C759;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
     background: var(--bg);
@@ -82,6 +81,10 @@
     -webkit-backdrop-filter: none;
     border-bottom: 1px solid transparent;
   }
+
+  /* Toggle scroll hide for mobile */
+  .toggle-scroll::-webkit-scrollbar { display: none; }
+  .toggle-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* Search */
   .search-wrap { position: relative; }
@@ -149,6 +152,7 @@
     border: 1px solid var(--amber);
     border-radius: 10px;
     padding: 3px;
+    flex-shrink: 0;
   }
   .toggle-btn {
     padding: 6px 12px;
@@ -161,6 +165,7 @@
     background: transparent;
     border: none;
     font-family: inherit;
+    white-space: nowrap;
   }
   .toggle-btn.active {
     color: var(--amber);
@@ -173,7 +178,7 @@
   .hero-temp {
     font-family: 'Fraunces', serif;
     font-weight: 300;
-    font-size: clamp(120px, 18vw, 240px);
+    font-size: clamp(56px, 16vw, 240px);
     line-height: 0.85;
     letter-spacing: -0.04em;
     background: linear-gradient(180deg, #fcc558 0%, #FFAA00 60%, #FF9500 100%);
@@ -239,18 +244,11 @@
     color: var(--amber);
     font-weight: 600;
   }
-  .section-eyebrow::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--amber);
-    display: var(--dash-display, inline-block);
-  }
 
   .section-title {
     font-family: 'Fraunces', serif;
     font-weight: 300;
-    font-size: clamp(32px, 5vw, 48px);
+    font-size: clamp(24px, 5vw, 48px);
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text);
@@ -271,6 +269,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
   }
   .metric-tab.active {
     background: #0f0f0f;
@@ -300,7 +299,7 @@
   }
   .hour-card.now {
     border-color: var(--amber);
-    background: linear-gradient(180deg, r#0f0f0f, #0f0f0f);
+    background: linear-gradient(180deg, #0f0f0f, #0f0f0f);
   }
 
   /* Day cards */
@@ -439,6 +438,12 @@
     overflow: visible;
   }
 
+  /* Chart container */
+  .chart-container {
+    height: 280px;
+    position: relative;
+  }
+
   /* UV bar */
   .uv-bar {
     height: 8px;
@@ -514,6 +519,7 @@
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: #fcc558 transparent;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Fade in animation */
@@ -590,6 +596,7 @@
     cursor: pointer;
     transition: all 0.2s;
     font-family: inherit;
+    white-space: nowrap;
   }
   .back-today.visible { display: inline-flex; }
   .back-today:hover {
@@ -597,9 +604,61 @@
     transform: translateX(-2px);
   }
 
-  /* Responsive tweaks */
+  /* ============================================
+     RESPONSIVE — Tablets
+     ============================================ */
   @media (max-width: 768px) {
-    .hero-temp { font-size: 120px; }
+    .hero-temp { font-size: clamp(56px, 16vw, 120px); }
+    .section-title { font-size: clamp(22px, 6vw, 30px); }
+    .stat-card { padding: 14px; border-radius: 14px; }
+    .stat-value { font-size: 24px; }
+    .stat-unit { font-size: 12px; }
+    .compass { width: 140px; height: 140px; }
+    .compass-arrow { height: 55px; }
+    .compass-arrow::before { border-bottom-width: 12px; border-left-width: 6px; border-right-width: 6px; }
+    .compass-arrow::after { height: 42px; }
+    .day-card { padding: 16px 12px; border-radius: 14px; }
+    .world-card { padding: 14px; border-radius: 14px; }
+    .chart-container { height: 220px; }
+    .sun-arc-wrap { height: 100px; }
+    #toasts { bottom: 16px; right: 16px; left: 16px; }
+    .toast { min-width: 0; width: 100%; }
+    .search-dropdown { max-height: 260px; }
+    .hour-card { flex: 0 0 80px; padding: 12px 8px; }
+    .metric-tab { padding: 8px 14px; font-size: 12px; }
+    .toggle-btn { padding: 5px 10px; font-size: 11px; }
+  }
+
+  /* ============================================
+     RESPONSIVE — Smartphones
+     ============================================ */
+  @media (max-width: 480px) {
+    .hero-temp { font-size: clamp(48px, 18vw, 80px); }
+    .stat-value { font-size: 20px; }
+    .stat-label { font-size: 10px; }
+    .stat-card { padding: 12px; border-radius: 12px; }
+    .hour-card { flex: 0 0 70px; padding: 10px 6px; border-radius: 12px; }
+    .day-card { padding: 14px 10px; border-radius: 12px; }
+    .world-card { padding: 12px; border-radius: 12px; }
+    .toggle-btn { padding: 5px 9px; font-size: 10px; }
+    .toggle-group { padding: 2px; border-radius: 8px; }
+    .metric-tab { padding: 7px 12px; font-size: 11px; }
+    .section-eyebrow { font-size: 10px; letter-spacing: 0.15em; }
+    .compass { width: 120px; height: 120px; }
+    .compass-arrow { height: 46px; }
+    .compass-arrow::before { border-bottom-width: 10px; border-left-width: 5px; border-right-width: 5px; }
+    .compass-arrow::after { height: 35px; top: 10px; }
+    .chart-container { height: 180px; }
+    .sun-arc-wrap { height: 80px; }
+    #toasts { bottom: 12px; right: 12px; left: 12px; }
+    .toast { padding: 12px 16px; font-size: 13px; }
+  }
+
+  /* ============================================
+     RESPONSIVE — Landscape phones
+     ============================================ */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .chart-container { height: 200px; }
   }
 </style>
 </head>
@@ -613,7 +672,7 @@
 
   <!-- HEADER -->
   <header class="glass sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-5 lg:px-8 py-4 flex items-center gap-4 lg:gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 py-3 sm:py-4 flex items-center gap-3 sm:gap-4 lg:gap-8 flex-wrap lg:flex-nowrap">
       <a href="#" class="flex items-center gap-2.5 shrink-0">
         <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
           <circle cx="16" cy="16" r="6" fill="#f5b942"/>
@@ -621,12 +680,12 @@
           <circle cx="16" cy="16" r="15" stroke="#f5b942" stroke-width="0.5" opacity="0.25"/>
         </svg>
         <div>
-          <div class="font-display text-xl tracking-tight" style="color:var(--text)">Atmos</div>
+          <div class="font-display text-lg sm:text-xl tracking-tight" style="color:var(--text)">Atmos</div>
           <div class="text-[9px] uppercase tracking-[0.2em]" style="color:var(--text-3)" data-i18n="meteorology">Meteorology</div>
         </div>
       </a>
 
-      <div class="search-wrap flex-1 max-w-md mx-auto" id="searchWrap">
+      <div class="search-wrap flex-1 min-w-0 max-w-md mx-auto order-3 lg:order-2 w-full lg:w-auto" id="searchWrap">
         <div class="relative">
           <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
@@ -637,7 +696,7 @@
         <div class="search-dropdown" id="searchDropdown"></div>
       </div>
 
-      <div class="hidden md:flex items-center gap-2 shrink-0">
+      <div class="flex items-center gap-2 shrink-0 order-2 lg:order-3 ml-auto lg:ml-0 w-full lg:w-auto overflow-x-auto toggle-scroll pb-1 lg:pb-0">
         <div class="toggle-group" id="langToggle">
           <button class="toggle-btn active" data-lang="en">EN</button>
           <button class="toggle-btn" data-lang="pt">PT</button>
@@ -655,25 +714,25 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-5 lg:px-8 pt-10 pb-24">
+  <main class="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 pt-6 sm:pt-10 pb-16 sm:pb-24">
 
     <!-- HERO -->
-    <section id="hero" class="relative mb-20">
+    <section id="hero" class="relative mb-12 sm:mb-16 lg:mb-20">
       <div class="grid-bg absolute inset-0 -z-10 rounded-3xl opacity-50"></div>
 
-      <div class="flex items-center justify-between mb-8 fade-in">
-        <div class="section-eyebrow" style="--dash-display: none;">
+      <div class="flex items-center justify-between mb-6 sm:mb-8 fade-in flex-wrap gap-2">
+        <div class="section-eyebrow">
           <span class="live-dot"></span>
           <span data-i18n="live_observation">Live Observation</span>
         </div>
         <div class="text-xs" style="color:var(--text-3)" id="dataTimestamp">—</div>
       </div>
 
-      <div class="grid lg:grid-cols-12 gap-8 items-start fade-in" id="heroContent">
+      <div class="grid lg:grid-cols-12 gap-6 sm:gap-8 items-start fade-in" id="heroContent">
         <!-- Left: location & condition -->
         <div class="lg:col-span-7">
-          <h1 class="font-display text-5xl lg:text-6xl font-light tracking-tight mb-2" id="cityName" style="color:var(--text)">—</h1>
-          <div class="flex items-center gap-3 mb-8 text-sm flex-wrap" style="color:var(--text-2)">
+          <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight mb-2" id="cityName" style="color:var(--text)">—</h1>
+          <div class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 text-xs sm:text-sm flex-wrap" style="color:var(--text-2)">
             <span id="countryName">—</span>
             <span style="color:var(--text-3)">·</span>
             <span id="localTime">—</span>
@@ -681,11 +740,11 @@
             <span id="coords">—</span>
           </div>
 
-          <div class="flex items-end gap-6 mb-8">
+          <div class="flex items-end gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div id="weatherIconLarge" class="shrink-0"></div>
-            <div>
-              <div class="font-display text-3xl font-light" id="conditionText" style="color:var(--text)">—</div>
-              <div class="text-sm mt-1" style="color:var(--text-2)">
+            <div class="min-w-0">
+              <div class="font-display text-2xl sm:text-3xl font-light" id="conditionText" style="color:var(--text)">—</div>
+              <div class="text-xs sm:text-sm mt-1" style="color:var(--text-2)">
                 <span data-i18n="feels_like">Feels like</span> <span id="feelsLike" style="color:var(--amber)">—</span>
               </div>
             </div>
@@ -693,9 +752,9 @@
         </div>
 
         <!-- Right: temperature -->
-        <div class="lg:col-span-5 text-right lg:pt-4">
+        <div class="lg:col-span-5 text-left lg:text-right lg:pt-4">
           <div class="hero-temp" id="heroTemp">—°</div>
-          <div class="flex justify-end gap-6 mt-2 text-sm" style="color:var(--text-2)">
+          <div class="flex justify-start lg:justify-end gap-4 sm:gap-6 mt-2 text-xs sm:text-sm" style="color:var(--text-2)">
             <span><span data-i18n="h_short">H:</span> <span id="tempHigh" style="color:var(--text)">—</span></span>
             <span><span data-i18n="l_short">L:</span> <span id="tempLow" style="color:var(--text)">—</span></span>
           </div>
@@ -703,7 +762,7 @@
       </div>
 
       <!-- Quick stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 fade-in" id="quickStats">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-10 fade-in" id="quickStats">
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="wind">Wind</span>
@@ -755,8 +814,8 @@
     </section>
 
     <!-- HOURLY -->
-    <section id="hourly" class="mb-20">
-      <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+    <section id="hourly" class="mb-12 sm:mb-16 lg:mb-20">
+      <div class="flex items-end justify-between mb-6 sm:mb-8 flex-wrap gap-4">
         <div>
           <div class="section-eyebrow mb-3" id="hourlyEyebrow" data-i18n="next_24_hours">Next 24 Hours</div>
           <h2 class="section-title" id="hourlyTitle" data-i18n="hourly_forecast">Hourly forecast</h2>
@@ -766,7 +825,7 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             <span data-i18n="back_to_today">Back to today</span>
           </button>
-          <div class="flex gap-2" id="metricTabs">
+          <div class="flex gap-2 overflow-x-auto toggle-scroll" id="metricTabs">
             <button class="metric-tab active" data-metric="temperature">
               <span data-i18n="temperature">Temperature</span>
             </button>
@@ -780,20 +839,20 @@
         </div>
       </div>
 
-      <div class="stat-card !p-6 mb-6" style="background: linear-gradient(135deg, rgba(20, 23, 31, 0.9), rgba(15, 18, 25, 0.6));">
-        <div style="height: 280px; position: relative;">
+      <div class="stat-card !p-4 sm:!p-6 mb-4 sm:mb-6" style="background: linear-gradient(135deg, rgba(20, 23, 31, 0.9), rgba(15, 18, 25, 0.6));">
+        <div class="chart-container">
           <canvas id="hourlyChart"></canvas>
         </div>
       </div>
 
       <div class="scroll-x">
-        <div class="flex gap-3 pb-2" id="hourCards" style="min-content-width: max-content;"></div>
+        <div class="flex gap-3 pb-2" id="hourCards"></div>
       </div>
     </section>
 
     <!-- 7 DAY -->
-    <section id="weekly" class="mb-20">
-      <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+    <section id="weekly" class="mb-12 sm:mb-16 lg:mb-20">
+      <div class="flex items-end justify-between mb-6 sm:mb-8 flex-wrap gap-4">
         <div>
           <div class="section-eyebrow mb-3" data-i18n="extended_outlook">Extended Outlook</div>
           <h2 class="section-title" data-i18n="7day_forecast">7-day forecast</h2>
@@ -804,27 +863,27 @@
     </section>
 
     <!-- WORLD -->
-    <section id="world" class="mb-20">
-      <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+    <section id="world" class="mb-12 sm:mb-16 lg:mb-20">
+      <div class="flex items-end justify-between mb-6 sm:mb-8 flex-wrap gap-4">
         <div>
           <div class="section-eyebrow mb-3" data-i18n="global_observations">Global Observations</div>
           <h2 class="section-title" data-i18n="weather_world">Weather around the world</h2>
         </div>
         <div class="text-xs" style="color:var(--text-3)" data-i18n="click_place_hint">Click a place to explore</div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="worldGrid"></div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" id="worldGrid"></div>
     </section>
 
     <!-- DETAILS -->
-    <section id="details" class="mb-12">
-      <div class="mb-8">
+    <section id="details" class="mb-8 sm:mb-12">
+      <div class="mb-6 sm:mb-8">
         <div class="section-eyebrow mb-3" data-i18n="atmospheric_details">Atmospheric Details</div>
         <h2 class="section-title" data-i18n="beyond_basics">Beyond the basics</h2>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
         <!-- Sun arc -->
-        <div class="stat-card !p-6">
+        <div class="stat-card !p-4 sm:!p-6">
           <div class="stat-label mb-4" data-i18n="sun_position">Sun Position</div>
           <div class="sun-arc-wrap mb-3">
             <svg class="sun-arc" viewBox="0 0 200 100" preserveAspectRatio="none">
@@ -855,9 +914,9 @@
         </div>
 
         <!-- UV Index -->
-        <div class="stat-card !p-6">
+        <div class="stat-card !p-4 sm:!p-6">
           <div class="stat-label mb-4" data-i18n="uv_index">UV Index</div>
-          <div class="font-display text-5xl font-light mb-1" id="uvValue" style="color:var(--text)">—</div>
+          <div class="font-display text-4xl sm:text-5xl font-light mb-1" id="uvValue" style="color:var(--text)">—</div>
           <div class="text-sm mb-4" id="uvLabel" style="color:var(--text-2)">—</div>
           <div class="uv-bar mb-2">
             <div class="uv-marker" id="uvMarker" style="left:0%"></div>
@@ -868,7 +927,7 @@
         </div>
 
         <!-- Wind compass -->
-        <div class="stat-card !p-6">
+        <div class="stat-card !p-4 sm:!p-6">
           <div class="stat-label mb-4" data-i18n="wind_direction">Wind Direction</div>
           <div class="compass">
             <div class="compass-ring"></div>
@@ -879,7 +938,7 @@
             <div class="compass-arrow" id="compassArrow"></div>
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div class="text-center">
-                <div class="font-display text-2xl font-light" id="compassSpeed" style="color:var(--text)">—</div>
+                <div class="font-display text-xl sm:text-2xl font-light" id="compassSpeed" style="color:var(--text)">—</div>
                 <div class="text-[10px] uppercase tracking-wider" style="color:var(--text-3)" id="compassDir">—</div>
               </div>
             </div>
@@ -887,7 +946,7 @@
         </div>
 
         <!-- Precipitation detail -->
-        <div class="stat-card !p-6">
+        <div class="stat-card !p-4 sm:!p-6">
           <div class="stat-label mb-4" data-i18n="precipitation">Precipitation</div>
           <div class="space-y-3">
             <div class="flex justify-between items-baseline">
@@ -914,7 +973,7 @@
   </main>
 
   <footer class="border-t" style="border-color:var(--border-soft)">
-    <div class="max-w-7xl mx-auto px-5 lg:px-8 py-10 grid md:grid-cols-3 gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 py-8 sm:py-10 grid md:grid-cols-3 gap-6 sm:gap-8">
       <div>
         <div class="flex items-center gap-2.5 mb-3">
           <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
@@ -1695,7 +1754,7 @@ function renderHourlyChart() {
             font: { family: 'Space Grotesk', size: 10 },
             maxRotation: 0,
             autoSkip: true,
-            maxTicksLimit: 12,
+            maxTicksLimit: window.innerWidth < 480 ? 6 : 12,
           },
           border: { color: 'rgba(255,255,255,0.05)' }
         },
@@ -1859,14 +1918,14 @@ async function renderWorld() {
     html += `
       <div class="world-card" data-lat="${c.lat}" data-lon="${c.lon}" data-name="${cName}" data-country="${cCountry}">
         <div class="flex items-start justify-between mb-3">
-          <div>
-            <div class="font-display text-lg font-light" style="color:var(--text)">${cName}</div>
+          <div class="min-w-0">
+            <div class="font-display text-base sm:text-lg font-light truncate" style="color:var(--text)">${cName}</div>
             <div class="text-[10px] uppercase tracking-wider" style="color:var(--text-3)">${cCountry}</div>
           </div>
           ${weatherIcon(code, 40)}
         </div>
         <div class="flex items-baseline justify-between">
-          <span class="font-display text-3xl font-light" style="color:var(--amber)">${temp}°</span>
+          <span class="font-display text-2xl sm:text-3xl font-light" style="color:var(--amber)">${temp}°</span>
           <span class="text-[11px] font-mono" style="color:var(--text-2)">${wind} ${windSuffix().split('/')[0]}</span>
         </div>
       </div>
@@ -2264,4 +2323,3 @@ init();
 
 </body>
 </html>
-```
