@@ -1,12 +1,3 @@
-To make the city and country names fully translate when you switch languages, I've made the following updates:
-
-1. **Search Results**: The Open-Meteo Geocoding API now uses the selected language (`language=pt` or `en`), so searched cities will appear in their Portuguese form (e.g., "Lisboa" instead of "Lisbon").
-2. **Reverse Geocoding**: When fetching the user's location via GPS, BigDataCloud will return the city/country in the active language.
-3. **Pre-set World Cities**: The 12 hardcoded global cities (Tokyo, London, etc.) now have both English and Portuguese translations built-in. 
-4. **Live Update**: When you click the `EN / PT` toggle, the website will instantly re-fetch the current location's name in the new language and re-render the world weather grid with translated names.
-
-Here is the updated code:
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -21,22 +12,22 @@ Here is the updated code:
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0a0c12;
-    --bg-2: #0f1219;
-    --surface: #14171f;
-    --surface-2: #1a1e28;
-    --border: rgba(245, 185, 66, 0.12);
-    --border-soft: rgba(255, 255, 255, 0.06);
-    --text: #ebe6db;
-    --text-2: #a8a195;
-    --text-3: #6b6657;
-    --amber: #f5b942;
-    --amber-2: #f5a736;
+    --bg: #0f0f0f;
+    --bg-2: #0f0f0f;
+    --surface: #0f0f0f;
+    --surface-2: #0f0f0f;
+    --border: #FF9500;
+    --border-soft: rgb(0, 0, 0);
+    --text: #E7E9EA;
+    --text-2: #d1d1d1;
+    --text-3: #d1d1d1;
+    --amber: #fcc558;
+    --amber-2: #FFAA00;
     --coral: #ff7a59;
-    --teal: #6ad4c8;
-    --cyan: #67e8f9;
-    --red: #ef5350;
-    --green: #84cc16;
+    --teal: rgb(106, 212, 200);
+    --cyan: rgb(106, 212, 200);
+    --red: #ff0000ff;
+    --green: #34C759;
   }
 
   * { box-sizing: border-box; }
@@ -59,10 +50,10 @@ Here is the updated code:
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(245, 185, 66, 0.08), transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 100%, rgba(106, 212, 200, 0.06), transparent 60%),
-      radial-gradient(ellipse 50% 30% at 50% 50%, rgba(255, 122, 89, 0.04), transparent 70%),
-      linear-gradient(180deg, #0a0c12 0%, #0d0f17 50%, #0a0c12 100%);
+      radial-gradient(ellipse 80% 50% at 20% 0%, #4d320e, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 100%, #0f0f0f, transparent 60%),
+      radial-gradient(ellipse 50% 30% at 50% 50%, #0f0f0f, transparent 70%),
+      linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 50%, #0f0f0f 100%);
   }
 
   .atmos-noise {
@@ -86,17 +77,17 @@ Here is the updated code:
 
   /* Header */
   .glass {
-    background: rgba(15, 18, 25, 0.7);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border-bottom: 1px solid var(--border-soft);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid transparent;
   }
 
   /* Search */
   .search-wrap { position: relative; }
   .search-input {
-    background: rgba(20, 23, 31, 0.8);
-    border: 1px solid var(--border-soft);
+    background: #0f0f0f;
+    border: 1px solid var(--amber);
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
     transition: all 0.25s ease;
@@ -104,21 +95,21 @@ Here is the updated code:
   .search-input:focus {
     outline: none;
     border-color: var(--amber);
-    background: rgba(245, 185, 66, 0.05);
-    box-shadow: 0 0 0 4px rgba(245, 185, 66, 0.08);
+    background: #0f0f0f;
+    box-shadow: 0 0 0 4px #0f0f0f;
   }
-  .search-input::placeholder { color: var(--text-3); }
+  .search-input::placeholder { color: var(--text); }
   .search-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: rgba(20, 23, 31, 0.95);
+    background: #0f0f0f;
     backdrop-filter: blur(20px);
-    border: 1px solid var(--border-soft);
+    border: 1px solid var(--amber);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 50px #0f0f0f;
     z-index: 50;
     max-height: 320px;
     overflow-y: auto;
@@ -135,7 +126,7 @@ Here is the updated code:
   .search-result {
     padding: 12px 16px;
     cursor: pointer;
-    border-bottom: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--amber);
     transition: background 0.15s;
     display: flex;
     align-items: center;
@@ -143,7 +134,7 @@ Here is the updated code:
     gap: 12px;
   }
   .search-result:last-child { border-bottom: none; }
-  .search-result:hover { background: rgba(245, 185, 66, 0.08); }
+  .search-result:hover { background: #0f0f0f; }
   .search-result .country {
     font-size: 11px;
     color: var(--text-3);
@@ -154,8 +145,8 @@ Here is the updated code:
   /* Toggle */
   .toggle-group {
     display: inline-flex;
-    background: rgba(20, 23, 31, 0.8);
-    border: 1px solid var(--border-soft);
+    background: #0f0f0f;
+    border: 1px solid var(--amber);
     border-radius: 10px;
     padding: 3px;
   }
@@ -163,7 +154,7 @@ Here is the updated code:
     padding: 6px 12px;
     font-size: 12px;
     font-weight: 500;
-    color: var(--text-2);
+    color: var(--text);
     border-radius: 7px;
     cursor: pointer;
     transition: all 0.2s;
@@ -172,8 +163,8 @@ Here is the updated code:
     font-family: inherit;
   }
   .toggle-btn.active {
-    background: var(--amber);
-    color: #1a1300;
+    color: var(--amber);
+    background: #0f0f0f;
     font-weight: 600;
   }
   .toggle-btn:not(.active):hover { color: var(--text); }
@@ -185,7 +176,7 @@ Here is the updated code:
     font-size: clamp(120px, 18vw, 240px);
     line-height: 0.85;
     letter-spacing: -0.04em;
-    background: linear-gradient(180deg, #ffe9b8 0%, #f5b942 60%, #d4922b 100%);
+    background: linear-gradient(180deg, #fcc558 0%, #FFAA00 60%, #FF9500 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -193,7 +184,7 @@ Here is the updated code:
   }
 
   .stat-card {
-    background: linear-gradient(135deg, rgba(20, 23, 31, 0.8), rgba(15, 18, 25, 0.4));
+    background: #0f0f0f;
     border: 1px solid var(--border-soft);
     border-radius: 16px;
     padding: 20px;
@@ -206,12 +197,12 @@ Here is the updated code:
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(245, 185, 66, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, #fcc558, transparent);
     opacity: 0;
     transition: opacity 0.3s;
   }
   .stat-card:hover {
-    border-color: rgba(245, 185, 66, 0.25);
+    border-color: #FF9500;
     transform: translateY(-2px);
   }
   .stat-card:hover::before { opacity: 1; }
@@ -282,19 +273,19 @@ Here is the updated code:
     gap: 8px;
   }
   .metric-tab.active {
-    background: rgba(245, 185, 66, 0.1);
+    background: #0f0f0f;
     border-color: var(--amber);
     color: var(--amber);
   }
   .metric-tab:not(.active):hover {
-    border-color: rgba(245, 185, 66, 0.3);
+    border-color: #FF9500;
     color: var(--text);
   }
 
   /* Hour cards */
   .hour-card {
     flex: 0 0 92px;
-    background: linear-gradient(180deg, rgba(20, 23, 31, 0.6), rgba(15, 18, 25, 0.3));
+    background: linear-gradient(180deg, #0f0f0f, #0f0f0f);
     border: 1px solid var(--border-soft);
     border-radius: 14px;
     padding: 14px 10px;
@@ -303,18 +294,18 @@ Here is the updated code:
     cursor: default;
   }
   .hour-card:hover {
-    border-color: rgba(245, 185, 66, 0.3);
-    background: linear-gradient(180deg, rgba(245, 185, 66, 0.05), rgba(15, 18, 25, 0.3));
+    border-color: #FF9500;
+    background: linear-gradient(180deg, #0f0f0f, #0f0f0f);
     transform: translateY(-3px);
   }
   .hour-card.now {
     border-color: var(--amber);
-    background: linear-gradient(180deg, rgba(245, 185, 66, 0.12), rgba(245, 185, 66, 0.02));
+    background: linear-gradient(180deg, r#0f0f0f, #0f0f0f);
   }
 
   /* Day cards */
   .day-card {
-    background: linear-gradient(160deg, rgba(20, 23, 31, 0.8), rgba(15, 18, 25, 0.4));
+    background: #0f0f0f;
     border: 1px solid var(--border-soft);
     border-radius: 18px;
     padding: 22px 18px;
@@ -327,20 +318,20 @@ Here is the updated code:
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(245, 185, 66, 0.08), transparent 60%);
+    background: radial-gradient(circle at 50% 0%, #000000, transparent 0%);
     opacity: 0;
     transition: opacity 0.35s;
     pointer-events: none;
   }
   .day-card:hover {
     transform: translateY(-4px);
-    border-color: rgba(245, 185, 66, 0.3);
+    border-color: #FF9500;
   }
   .day-card:hover::after { opacity: 1; }
   .day-card.selected {
     border-color: var(--amber);
-    background: linear-gradient(160deg, rgba(245, 185, 66, 0.12), rgba(15, 18, 25, 0.4));
-    box-shadow: 0 0 24px rgba(245, 185, 66, 0.15);
+    background: #0f0f0f;
+    box-shadow: 0 0 24px #FF9500;
   }
   .day-card.selected::after { opacity: 1; }
   .day-card.selected .day-badge {
@@ -353,8 +344,8 @@ Here is the updated code:
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--amber);
-    background: rgba(245, 185, 66, 0.15);
+    color: #0f0f0f;
+    background: #FF9500;
     padding: 3px 8px;
     border-radius: 20px;
     opacity: 0;
@@ -362,23 +353,9 @@ Here is the updated code:
     font-weight: 600;
   }
 
-  .temp-range-bar {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
-    position: relative;
-    overflow: hidden;
-  }
-  .temp-range-fill {
-    position: absolute;
-    height: 100%;
-    background: linear-gradient(90deg, var(--cyan), var(--amber), var(--coral));
-    border-radius: 2px;
-  }
-
   /* World city cards */
   .world-card {
-    background: linear-gradient(140deg, rgba(20, 23, 31, 0.8), rgba(15, 18, 25, 0.4));
+    background: linear-gradient(140deg, #0f0f0f, #0f0f0f);
     border: 1px solid var(--border-soft);
     border-radius: 16px;
     padding: 18px;
@@ -390,7 +367,7 @@ Here is the updated code:
   .world-card:hover {
     transform: translateY(-3px);
     border-color: var(--amber);
-    background: linear-gradient(140deg, rgba(245, 185, 66, 0.06), rgba(15, 18, 25, 0.5));
+    background: linear-gradient(140deg, #0f0f0f, #0f0f0f);
   }
 
   /* Wind compass */
@@ -410,7 +387,7 @@ Here is the updated code:
     content: '';
     position: absolute;
     inset: 12px;
-    border: 1px dashed rgba(255,255,255,0.04);
+    border: 1px dashed #0f0f0f;
     border-radius: 50%;
   }
   .compass-arrow {
@@ -492,7 +469,7 @@ Here is the updated code:
     gap: 10px;
   }
   .toast {
-    background: rgba(20, 23, 31, 0.95);
+    background: #0f0f0f;
     backdrop-filter: blur(20px);
     border: 1px solid var(--border-soft);
     border-left: 3px solid var(--amber);
@@ -501,7 +478,7 @@ Here is the updated code:
     color: var(--text);
     font-size: 14px;
     min-width: 260px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px #0f0f0f;
     animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .toast.error { border-left-color: var(--red); }
@@ -516,7 +493,7 @@ Here is the updated code:
 
   /* Loading */
   .skeleton {
-    background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%);
+    background: linear-gradient(90deg, #0f0f0f 0%, #0f0f0f 50%, #0f0f0f 100%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     border-radius: 8px;
@@ -529,14 +506,14 @@ Here is the updated code:
   /* Scrollbars */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(245, 185, 66, 0.2); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(245, 185, 66, 0.4); }
+  ::-webkit-scrollbar-thumb { background: #FFAA00; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #fcc558; }
 
   .scroll-x {
     overflow-x: auto;
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: rgba(245, 185, 66, 0.2) transparent;
+    scrollbar-color: #fcc558 transparent;
   }
 
   /* Fade in animation */
@@ -596,7 +573,7 @@ Here is the updated code:
   }
 
   /* Selection */
-  ::selection { background: rgba(245, 185, 66, 0.3); color: var(--text); }
+  ::selection { background: #0f0f0f; color: var(--text); }
 
   /* Back-to-today pill */
   .back-today {
@@ -604,7 +581,7 @@ Here is the updated code:
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
-    background: rgba(245, 185, 66, 0.1);
+    background: #0f0f0f;
     border: 1px solid var(--amber);
     border-radius: 20px;
     color: var(--amber);
@@ -616,7 +593,7 @@ Here is the updated code:
   }
   .back-today.visible { display: inline-flex; }
   .back-today:hover {
-    background: rgba(245, 185, 66, 0.2);
+    background: #0f0f0f;
     transform: translateX(-2px);
   }
 
@@ -730,9 +707,6 @@ Here is the updated code:
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="wind">Wind</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)">
-              <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
-            </svg>
           </div>
           <div class="stat-value font-mono">
             <span id="windSpeed">—</span><span class="stat-unit" id="windUnit">km/h</span>
@@ -745,9 +719,6 @@ Here is the updated code:
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="humidity">Humidity</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-            </svg>
           </div>
           <div class="stat-value font-mono">
             <span id="humidity">—</span><span class="stat-unit">%</span>
@@ -760,9 +731,6 @@ Here is the updated code:
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="precipitation">Precipitation</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)">
-              <path d="M12 2v6m0 13c-3.87 0-7-3.13-7-7 0-2.68 1.56-5 4-6.5L12 22z"/>
-            </svg>
           </div>
           <div class="stat-value font-mono">
             <span id="precipNow">—</span><span class="stat-unit">mm</span>
@@ -775,9 +743,6 @@ Here is the updated code:
         <div class="stat-card">
           <div class="flex items-center justify-between mb-3">
             <span class="stat-label" data-i18n="pressure">Pressure</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)">
-              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-            </svg>
           </div>
           <div class="stat-value font-mono">
             <span id="pressure">—</span><span class="stat-unit">hPa</span>
@@ -803,15 +768,12 @@ Here is the updated code:
           </button>
           <div class="flex gap-2" id="metricTabs">
             <button class="metric-tab active" data-metric="temperature">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
               <span data-i18n="temperature">Temperature</span>
             </button>
             <button class="metric-tab" data-metric="wind">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/></svg>
               <span data-i18n="wind">Wind</span>
             </button>
             <button class="metric-tab" data-metric="precipitation">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 13c-3.87 0-7-3.13-7-7 0-2.68 1.56-5 4-6.5L12 22z"/></svg>
               <span data-i18n="precipitation">Precipitation</span>
             </button>
           </div>
