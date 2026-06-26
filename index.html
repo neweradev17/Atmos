@@ -1867,12 +1867,6 @@ function selectDay(day) {
   const headerHeight = 80;
   const top = hourlySection.getBoundingClientRect().top + window.scrollY - headerHeight;
   window.scrollTo({ top, behavior: 'smooth' });
-
-  const w = state.weather;
-  if (w && day > 0) {
-    const d = new Date(w.daily.time[day]);
-    showToast(t('toast_showing_day', { day: fmtDayLong(d) }));
-  }
 }
 
 // ----- Render: World -----
@@ -2019,8 +2013,6 @@ async function loadLocation(loc) {
     renderHourCards();
     renderWeekly();
     renderDetails();
-
-    showToast(t('toast_loaded', { name: loc.name }));
   } catch (e) {
     console.error(e);
     showToast(t('toast_error_load'), 'error');
