@@ -291,11 +291,14 @@
     text-align: center;
     transition: all 0.25s;
     cursor: default;
+    position: relative;
+    z-index: 1;
   }
   .hour-card:hover {
     border-color: #FF9500;
     background: linear-gradient(180deg, #0f0f0f, #0f0f0f);
     transform: translateY(-3px);
+    z-index: 10;
   }
   .hour-card.now {
     border-color: var(--amber);
@@ -1260,7 +1263,7 @@ const WEATHER_CODES = {
 };
 
 const WORLD_CITIES = [
-  { name_en: 'Tokyo', name_pt: 'Tóquio', country_en: 'Japan', country_pt: 'Japão', lat: 35.6762, lon: 139.6503 },
+  { name_en: 'Lisbon', name_pt: 'Lisboa', country_en: 'Portugal', country_pt: 'Portugal', lat: 38.7223, lon: -9.1393 },
   { name_en: 'New York', name_pt: 'Nova York', country_en: 'United States', country_pt: 'Estados Unidos', lat: 40.7128, lon: -74.0060 },
   { name_en: 'London', name_pt: 'Londres', country_en: 'United Kingdom', country_pt: 'Reino Unido', lat: 51.5074, lon: -0.1278 },
   { name_en: 'Paris', name_pt: 'Paris', country_en: 'France', country_pt: 'França', lat: 48.8566, lon: 2.3522 },
@@ -1533,16 +1536,27 @@ async function fetchWorldWeather() {
 }
 
 async function detectLanguage() {
+  // Try API 1: api.country.is (fast, reliable, HTTPS, CORS)
+  try {
+    const r = await fetch('https://api.country.is/');
+    if (r.ok) {
+      const d = await r.json();
+      if (d.country && PT_COUNTRIES.includes(d.country)) return 'pt';
+      if (d.country) return 'en';
+    }
+  } catch (e) { /* ignore */ }
+
+  // Try API 2: ipwho.is
   try {
     const r = await fetch('https://ipwho.is/');
-    if (!r.ok) return 'en';
-    const d = await r.json();
-    if (d.country_code && PT_COUNTRIES.includes(d.country_code)) {
-      return 'pt';
+    if (r.ok) {
+      const d = await r.json();
+      if (d.country_code && PT_COUNTRIES.includes(d.country_code)) return 'pt';
+      if (d.country_code) return 'en';
     }
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) { /* ignore */ }
+
+  // Fallback to browser language if IP detection fails completely
   const browserLang = navigator.language || navigator.userLanguage || 'en';
   return browserLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
 }
@@ -1720,7 +1734,7 @@ function renderHourlyChart() {
         x: {
           grid: { display: false },
           ticks: {
-            color: '#6b6657',
+            color: '#E7E9EA',
             font: { family: 'Space Grotesk', size: 10 },
             maxRotation: 0,
             autoSkip: true,
@@ -1731,7 +1745,7 @@ function renderHourlyChart() {
         y: {
           grid: { color: 'rgba(255,255,255,0.04)' },
           ticks: {
-            color: '#6b6657',
+            color: '#E7E9EA',
             font: { family: 'Space Grotesk', size: 10 },
           },
           border: { display: false },
@@ -1770,7 +1784,7 @@ function renderHourCards() {
         <div class="flex justify-center mb-2">${weatherIcon(code, 40)}</div>
         <div class="font-display text-xl font-light mb-1" style="color:var(--text)">${temp}°</div>
         <div class="text-[10px] font-mono" style="color:var(--teal)">${precip}%</div>
-        <div class="text-[10px] font-mono mt-0.5" style="color:var(--text-3)">${wind} ${windSuffix().split('/')[0]}</div>
+        <div class="text-[10px] font-mono mt-0.5" style="color:var(--text-3)">${wind} ${windSuffix()}</div>
       </div>
     `;
   }
@@ -1896,7 +1910,7 @@ async function renderWorld() {
         </div>
         <div class="flex items-baseline justify-between">
           <span class="font-display text-2xl sm:text-3xl font-light" style="color:var(--amber)">${temp}°</span>
-          <span class="text-[11px] font-mono" style="color:var(--text-2)">${wind} ${windSuffix().split('/')[0]}</span>
+          <span class="text-[11px] font-mono" style="color:var(--text-2)">${wind} ${windSuffix()}</span>
         </div>
       </div>
     `;
