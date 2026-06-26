@@ -1224,6 +1224,7 @@ function translatePage() {
 const state = {
   location: null,
   weather: null,
+  worldData: null, // 👈 NEW: Cached world weather data
   units: { temp: 'celsius', wind: 'kmh' },
   hourlyMetric: 'temperature',
   hourlyChart: null,
@@ -1519,9 +1520,7 @@ async function fetchWorldWeather() {
     current: 'temperature_2m,weather_code,wind_speed_10m',
     timezone: 'auto',
   });
-  if (state.units.temp === 'fahrenheit') params.set('temperature_unit', 'fahrenheit');
-  if (state.units.wind === 'mph') params.set('wind_speed_unit', 'mph');
-  if (state.units.wind === 'ms') params.set('wind_speed_unit', 'ms');
+  // 👈 REMOVED unit params: always fetch in canonical °C + km/h
 
   try {
     const url = `https://api.open-meteo.com/v1/forecast?${params}`;
@@ -1871,13 +1870,20 @@ function selectDay(day) {
 }
 
 // ----- Render: World -----
-async function renderWorld() {
+// 👈 NEW: Fetches once and caches to state, then renders
+async function loadWorldData() {
   $('#worldGrid').innerHTML = Array(12).fill(0).map(() =>
     `<div class="world-card skeleton" style="height:120px"></div>`
   ).join('');
 
-  const results = await fetchWorldWeather();
-  if (!results.length) {
+  state.worldData = await fetchWorldWeather();
+  renderWorldCards();
+}
+
+// 👈 NEW: Pure renderer, applies units to the cached state.worldData
+function renderWorldCards() {
+  const results = state.worldData;
+  if (!results || !results.length) {
     $('#worldGrid').innerHTML = `<div class="col-span-full text-center py-8 text-sm" style="color:var(--text-3)">${t('toast_error_load')}</div>`;
     return;
   }
@@ -1887,10 +1893,9 @@ async function renderWorld() {
     if (!c.data || !c.data.current) continue;
     const cur = c.data.current;
     const code = cur.weather_code;
-    const temp = Math.round(cur.temperature_2m);
-    const wind = Math.round(convertWind(cur.wind_speed_10m));
+    const temp = Math.round(convertTemp(cur.temperature_2m));   // 👈 Convert temp
+    const wind = Math.round(convertWind(cur.wind_speed_10m));   // 👈 Convert wind
     
-    // Determine localized name and country
     const cName = state.lang === 'pt' ? c.name_pt : c.name_en;
     const cCountry = state.lang === 'pt' ? c.country_pt : c.country_en;
 
@@ -2108,6 +2113,7 @@ function setupToggles() {
       renderWeekly();
       renderDetails();
     }
+    renderWorldCards(); // 👈 NEW: Update world cards instantly
   });
 
   $('#windToggle').addEventListener('click', (e) => {
@@ -2124,6 +2130,7 @@ function setupToggles() {
       renderWeekly();
       renderDetails();
     }
+    renderWorldCards(); // 👈 NEW: Update world cards instantly
   });
 }
 
@@ -2163,7 +2170,7 @@ function setupLangToggle() {
       renderWeekly();
       renderDetails();
     }
-    renderWorld(); // Re-render world grid with translated names
+    renderWorldCards(); // 👈 CHANGED: Just re-render with localized names, no refetch
   });
 }
 
@@ -2261,7 +2268,7 @@ async function init() {
 
   $$('#langToggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === state.lang));
   translatePage();
-  renderWorld();
+  loadWorldData(); // 👈 CHANGED: Fetches world data initially
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
